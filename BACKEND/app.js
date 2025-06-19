@@ -1,0 +1,52 @@
+import express from "express";
+import dbConnect from "./src/configs/monogo.config.js";
+import cors from "cors";
+import auth_routes from "./src/routes/auth.route.js";
+import dotenv from "dotenv";
+import router from "./src/routes/shortUrl.route.js";
+import cookieParser from "cookie-parser";
+
+dotenv.config("./.env");
+
+const app = express();
+
+// Middleware to parse JSON data
+app.use(express.json());
+
+// Middleware to parse URL-encoded data (e.g., from HTML forms)
+app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: "http://localhost:5173", // 👈 your frontend URL
+    credentials: true, // 👈 allow cookies, if using them
+  })
+);
+
+// Add manual CORS headers as fallback
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200); // preflight response
+  }
+  next();
+});
+
+app.use("/api/auth", auth_routes);
+
+app.use("/api", router);
+
+app.use("/", router);
+
+app.listen(3001, () => {
+  dbConnect();
+  console.log("i am listening 3001");
+});
