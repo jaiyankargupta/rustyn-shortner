@@ -20,14 +20,14 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:5174",
+    origin: "rustynshortner.vercel.app",
     credentials: true,
   }),
 );
 
 // Add manual CORS headers as fallback
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5174");
+  res.header("Access-Control-Allow-Origin", "rustynshortner.vercel.app");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(
     "Access-Control-Allow-Headers",
