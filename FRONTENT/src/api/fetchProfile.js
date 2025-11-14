@@ -1,6 +1,6 @@
 //userDetails
 
-const BACKEND_URL = import.meta.env.BACKEND_URL || "http://localhost:3001";
+const BACKEND_URL = import.meta.env.BACKEND_URL ;
 
 export const fetchUserDetails = async () => {
   const response = await fetch(`${BACKEND_URL}/api/auth/profile`, {
