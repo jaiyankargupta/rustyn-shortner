@@ -1,6 +1,5 @@
 //userDetails
-
-const BACKEND_URL = import.meta.env.BACKEND_URL ;
+import { BACKEND_URL } from "../config/api.config.js";
 
 export const fetchUserDetails = async () => {
   const response = await fetch(`${BACKEND_URL}/api/auth/profile`, {

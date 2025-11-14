@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "../../config/api.config.js";
 
 const Signup = () => {
   const [loading, setLoading] = React.useState(false);
@@ -15,7 +16,7 @@ const Signup = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3001/api/auth/register", {
+      const response = await fetch(`${BACKEND_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

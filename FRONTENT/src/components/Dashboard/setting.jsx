@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useContext } from "react";
 import { UserContext } from "../../context/UserContext";
 import { useEffect } from "react";
+import { BACKEND_URL } from "../../config/api.config.js";
 
 const Settings = () => {
   const { user } = useContext(UserContext);
@@ -25,7 +26,7 @@ const Settings = () => {
 
   const checkPassword = async () => {
     const response = await fetch(
-      "http://localhost:3001/api/auth/changePassword",
+      `${BACKEND_URL}/api/auth/changePassword`,
       {
         method: "PUT",
         headers: {
@@ -56,7 +57,7 @@ const Settings = () => {
   const updateDetails = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/api/auth/updateDetails",
+        `${BACKEND_URL}/api/auth/updateDetails`,
         {
           method: "PUT",
           headers: {

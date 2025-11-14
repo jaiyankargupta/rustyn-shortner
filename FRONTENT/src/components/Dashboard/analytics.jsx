@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
+import { BACKEND_URL } from "../../config/api.config.js";
 
 const Analytics = () => {
   const [analyticsData, setAnalyticsData] = React.useState(null);
@@ -8,9 +9,7 @@ const Analytics = () => {
     const FetchCount = async () => {
       try {
         const response = await fetch(
-          `${
-            import.meta.env.BACKEND_URL || "http://localhost:3001"
-          }/api/auth/analytic`,
+          `${BACKEND_URL}/api/auth/analytic`,
           {
             method: "GET",
             credentials: "include",
