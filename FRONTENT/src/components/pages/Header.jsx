@@ -1,25 +1,28 @@
-import React from "react";
+import React, { useContext } from "react";
 import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { UserContext } from "../../context/UserContext";
 
 import { useEffect } from "react";
 
 const Header = () => {
   const location = useLocation();
+  const { user } = useContext(UserContext);
 
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const navigation = useNavigate();
 
   useEffect(() => {
+    // Check if user is logged in based on user data from context
     const checkLoginStatus = () => {
-      const token = Cookies.get("accessToken");
-      setIsLoggedIn(!!token);
+      const hasUserData = user && user.email && user.name;
+      setIsLoggedIn(hasUserData);
     };
     checkLoginStatus();
-  }, []);
+  }, [user, location]);
   return (
     <header className="bg-blue-900 py-7 text-white">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4">
@@ -101,10 +104,13 @@ const Header = () => {
                       </li>
                       <li>
                         <button
-                          onClick={() => {
+                          onClick={async () => {
                             Cookies.remove("accessToken");
                             setIsLoggedIn(false);
+                            // Clear user data by making a logout request or clearing context
                             navigation("/");
+                            // Reload page to reset state
+                            window.location.reload();
                           }}
                           className="block w-full text-left px-4 py-2 hover:bg-gray-200"
                         >

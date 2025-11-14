@@ -20,14 +20,14 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "localhost:5174",
+    origin: process.env.FRONTEND_URL || "http://localhost:5174",
     credentials: true,
   }),
 );
 
 // Add manual CORS headers as fallback
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "localhost:5174");
+  res.header("Access-Control-Allow-Origin", process.env.FRONTEND_URL || "http://localhost:5174");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(
     "Access-Control-Allow-Headers",

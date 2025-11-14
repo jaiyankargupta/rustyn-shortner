@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../../config/api.config.js";
+import { UserContext } from "../../context/UserContext";
 
 const Signin = () => {
   const [email, setEmail] = React.useState("");
@@ -8,6 +9,8 @@ const Signin = () => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const navigate = useNavigate();
+  const { refetchUser } = useContext(UserContext);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -23,11 +26,14 @@ const Signin = () => {
     console.log(data);
     if (!response.ok) {
       setError(data.message || "Login failed. Please try again.");
+      setLoading(false);
     } else {
       setError("");
+      // Refetch user data after successful login
+      await refetchUser();
       navigate("/");
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

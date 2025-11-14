@@ -6,14 +6,22 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({ name: "", email: "" });
 
+  const refetchUser = async () => {
+    try {
+      const data = await fetchUserDetails();
+      setUser(data);
+    } catch (error) {
+      // If fetch fails, set default user (not logged in)
+      setUser({ name: "", email: "" });
+    }
+  };
+
   useEffect(() => {
-    fetchUserDetails()
-      .then((data) => setUser(data))
-      .catch(() => setUser({ name: "User", email: "user@example.com" }));
+    refetchUser();
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, refetchUser }}>
       {children}
     </UserContext.Provider>
   );
