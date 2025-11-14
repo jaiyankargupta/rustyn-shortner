@@ -43,7 +43,7 @@ export const getFrontendUrlService = async (req, res) => {
 
     if (accessToken) {
       const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
-      const userId = decoded.id;
+      const userId = decoded._id;
 
       const userUrls = await shortUrl.find({ user: userId });
 

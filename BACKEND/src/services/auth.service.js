@@ -91,7 +91,7 @@ export const updateUserProfileService = async ({
   token,
 }) => {
   try {
-    console.log("[SERVICE] Start update for userId:", decodedToken.id); // ✅ FIXED
+    console.log("[SERVICE] Start update for userId:", decodedToken._id);
 
     let existingUser = null;
 
@@ -102,14 +102,14 @@ export const updateUserProfileService = async ({
       }
 
       // generate new token with updated email
-      token = await generateToken(decodedToken.id, email); // ✅ FIXED
+      token = await generateToken(decodedToken._id, email);
     }
 
     if (!token) {
       throw new Error("Failed to generate token");
     }
 
-    const userDetails = await getUserById(decodedToken.id); // ✅ FIXED
+    const userDetails = await getUserById(decodedToken._id);
     if (!userDetails) {
       throw new Error("User not found");
     }

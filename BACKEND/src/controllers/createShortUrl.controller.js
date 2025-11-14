@@ -16,7 +16,7 @@ export const createShortUrl = async (req, res) => {
         req.cookies.accessToken,
         process.env.JWT_SECRET
       );
-      userId = decoded.id;
+      userId = decoded._id;
     } catch (error) {
       console.log("Invalid token, ignoring user association");
     }

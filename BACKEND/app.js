@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import router from "./src/routes/shortUrl.route.js";
 import cookieParser from "cookie-parser";
 
-dotenv.config("./.env");
+dotenv.config();
 
 const app = express();
 
@@ -20,18 +20,18 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // 👈 your frontend URL
-    credentials: true, // 👈 allow cookies, if using them
-  })
+    origin: "http://localhost:5174",
+    credentials: true,
+  }),
 );
 
 // Add manual CORS headers as fallback
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Origin", "http://localhost:5174");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
   );
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   if (req.method === "OPTIONS") {

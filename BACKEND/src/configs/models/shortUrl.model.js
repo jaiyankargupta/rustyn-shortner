@@ -4,19 +4,19 @@ const shortUrlSchema = new mongoose.Schema(
   {
     full_url: {
       type: String,
-      require: true,
+      required: true,
     },
     shortId: {
       type: String,
       index: true,
       unique: true,
-      require: true,
+      required: true,
     },
     short_url: {
       type: String,
       index: true,
       unique: true,
-      require: true,
+      required: true,
     },
 
     clicks: {

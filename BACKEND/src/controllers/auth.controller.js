@@ -50,7 +50,7 @@ export const getUserProfile = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const decoded = await verifyToken(accessToken);
-    const decodedId = decoded.id;
+    const decodedId = decoded._id;
     const user = await getUserProfileService(decodedId);
 
     if (!user) {
@@ -73,7 +73,7 @@ export const getAnalytic = async (req, res) => {
   try {
     const accessTokenCookie = req.cookies.accessToken;
     const decoded = jwt.verify(accessTokenCookie, process.env.JWT_SECRET);
-    const userId = decoded.id;
+    const userId = decoded._id;
 
     const urls = await shortUrl.find({ user: userId });
 
