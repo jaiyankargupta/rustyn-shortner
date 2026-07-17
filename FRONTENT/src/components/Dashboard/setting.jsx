@@ -16,6 +16,7 @@ const Settings = () => {
   const [oldPassCorrect, setOldPassCorrect] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     if (user?.name && user?.email) {
@@ -25,32 +26,36 @@ const Settings = () => {
   }, [user]);
 
   const checkPassword = async () => {
-    const response = await fetch(
-      `${BACKEND_URL}/api/auth/changePassword`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ email: userEmail, password: oldPassword }),
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/auth/changePassword`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ email: userEmail, password: oldPassword }),
+        }
+      );
+      if (!response.ok) {
+        setError("Verification failed. Please try again.");
+        setOldPassCorrect(false);
+        return;
       }
-    );
-    if (!response.ok) {
-      setError("Server error. Please try again later.");
-      setOldPassCorrect(false);
-      return;
-    }
-    const result = await response.json();
-    const { isPasswordValid } = result;
-    if (!isPasswordValid) {
-      setError("Old password is incorrect");
-      setOldPassCorrect(false);
-      setOldPassword("");
-    } else {
-      setOldPassCorrect(true);
-      setError("");
-      setPasswordEdit(true); // Show new password input after old password is correct
+      const result = await response.json();
+      const { isPasswordValid } = result;
+      if (!isPasswordValid) {
+        setError("Old password is incorrect");
+        setOldPassCorrect(false);
+        setOldPassword("");
+      } else {
+        setOldPassCorrect(true);
+        setError("");
+        setPasswordEdit(true);
+      }
+    } catch {
+      setError("Failed to verify password.");
     }
   };
 
@@ -72,181 +77,168 @@ const Settings = () => {
         }
       );
       if (!response.ok) {
-        setError("Failed to update.");
-        console.log("Failed to update user details.");
+        setError("Failed to update user details.");
+        return;
       }
       setError("");
+      setSuccess("Account details updated successfully!");
       setPasswordEdit(false);
-
       setOldPassCorrect(false);
       setOldPassword("");
       setNewPassword("");
+      setTimeout(() => setSuccess(""), 3000);
     } catch {
       setError("Server error. Please try again.");
     }
   };
 
   return (
-    <div>
-      <h1 className=" font-bold">
-        <h2 className="text-3xl font-semibold text-center">User Settings</h2>
-        <p className="text-gray-600 text-center">
-          Manage your account settings below.
-        </p>
-      </h1>
-
-      <div className="mt-8 flex flex-row gap-4 items-center">
-        {nameEdit ? (
-          <input
-            type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className="border border-gray-300 rounded p-2 flex-grow"
-            placeholder="Enter your new name"
-          />
-        ) : (
-          <span className="text-lg font-medium">Name : {userName}</span>
-        )}
-        {nameEdit ? (
-          <div
-            className="cursor-pointer text-blue-500 hover:text-blue-700 hover:underline"
-            onClick={() => {
-              updateDetails();
-              setNameEdit(false);
-            }}
-          >
-            Save
-          </div>
-        ) : (
-          <div
-            className="cursor-pointer text-blue-500 hover:text-blue-700 hover:underline"
-            onClick={() => {
-              setUserName(userName);
-              setNameEdit(true);
-              setError("");
-            }}
-          >
-            Edit
-          </div>
-        )}
+    <div className="max-w-xl mx-auto space-y-6">
+      <div className="text-center pb-4 border-b border-slate-200">
+        <h2 className="text-xl font-bold text-slate-900">User Settings</h2>
+        <p className="text-xs text-slate-500 mt-1">Manage your account settings below</p>
       </div>
-      {error && (
-        <div className="text-red-500 mt-2">
-          {error ? error : "Please fill all fields."}
+
+      {success && (
+        <div className="p-3 text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg text-center font-medium">
+          {success}
         </div>
       )}
 
-      <div className="mt-4 flex flex-row gap-4 items-center">
-        {emailEdit ? (
-          <input
-            type="email"
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
-            className="border border-gray-300 rounded p-2 flex-grow"
-            placeholder="Enter your new email"
-          />
-        ) : (
-          <span className="text-lg font-medium">Email : {userEmail}</span>
-        )}
+      {error && (
+        <div className="p-3 text-xs text-red-700 bg-red-50 border border-red-100 rounded-lg text-center font-medium">
+          {error}
+        </div>
+      )}
 
-        {emailEdit ? (
-          <div
-            className="cursor-pointer text-blue-500 hover:text-blue-700 hover:underline"
+      <div className="space-y-4">
+        {/* Name Field */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+          <div className="flex-1">
+            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Full Name</span>
+            {nameEdit ? (
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                className="mt-1 w-full px-3 py-1.5 bg-white border border-slate-350 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+                placeholder="Enter new name"
+              />
+            ) : (
+              <span className="text-sm font-semibold text-slate-800 mt-0.5 block">{userName}</span>
+            )}
+          </div>
+          <button
             onClick={() => {
-              updateDetails();
-              setEmailEdit(false);
+              if (nameEdit) {
+                updateDetails();
+              }
+              setNameEdit(!nameEdit);
               setError("");
             }}
+            className="px-4 py-1.5 border border-slate-300 hover:bg-slate-100 rounded-lg text-xs font-semibold text-slate-600 transition self-start sm:self-center cursor-pointer"
           >
-            Save
+            {nameEdit ? "Save" : "Edit"}
+          </button>
+        </div>
+
+        {/* Email Field */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+          <div className="flex-1">
+            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Email Address</span>
+            {emailEdit ? (
+              <input
+                type="email"
+                value={userEmail}
+                onChange={(e) => setUserEmail(e.target.value)}
+                className="mt-1 w-full px-3 py-1.5 bg-white border border-slate-350 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+                placeholder="Enter new email"
+              />
+            ) : (
+              <span className="text-sm font-semibold text-slate-800 mt-0.5 block">{userEmail}</span>
+            )}
           </div>
-        ) : (
-          <div
-            className="cursor-pointer text-blue-500 hover:text-blue-700 hover:underline"
+          <button
             onClick={() => {
-              setUserEmail(userEmail);
-              setEmailEdit(true);
+              if (emailEdit) {
+                updateDetails();
+              }
+              setEmailEdit(!emailEdit);
               setError("");
             }}
+            className="px-4 py-1.5 border border-slate-300 hover:bg-slate-100 rounded-lg text-xs font-semibold text-slate-600 transition self-start sm:self-center cursor-pointer"
           >
-            Edit
-          </div>
-        )}
-      </div>
+            {emailEdit ? "Save" : "Edit"}
+          </button>
+        </div>
 
-      <div className="mt-4 flex flex-row gap-4 items-center">
-        <div>
+        {/* Change Password */}
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+          <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Security Settings</span>
+          
           {!passwordEdit ? (
             <button
-              className="border p-1 rounded hover:bg-red-500"
               onClick={() => {
                 setPasswordEdit(true);
-
                 setOldPassCorrect(false);
                 setError("");
                 setOldPassword("");
                 setNewPassword("");
               }}
+              className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold transition cursor-pointer"
             >
               Change Password
             </button>
           ) : !oldPassCorrect ? (
-            <div>
+            <div className="flex flex-col sm:flex-row gap-2 max-w-md">
               <input
-                className="border p-1 rounded"
                 type="password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
-                placeholder="Enter Your old Password"
+                placeholder="Enter old password"
+                className="flex-grow px-3 py-1.5 bg-white border border-slate-350 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
               />
-              <button
-                onClick={checkPassword}
-                className="ml-4 border p-1 rounded hover:bg-green-500"
-              >
-                Submit
-              </button>
-              <button
-                className="ml-2 border p-1 rounded hover:bg-gray-300"
-                onClick={() => {
-                  setPasswordEdit(false);
-
-                  setOldPassword("");
-                  setError("");
-                }}
-              >
-                Cancel
-              </button>
-              {error && <div className="text-red-500">{error}</div>}
+              <div className="flex gap-2">
+                <button
+                  onClick={checkPassword}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
+                >
+                  Verify
+                </button>
+                <button
+                  onClick={() => setPasswordEdit(false)}
+                  className="border border-slate-300 hover:bg-slate-100 text-slate-600 px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           ) : (
-            <div>
+            <div className="flex flex-col sm:flex-row gap-2 max-w-md">
               <input
-                className="border p-1 rounded"
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter New Password"
+                placeholder="Enter new password"
+                className="flex-grow px-3 py-1.5 bg-white border border-slate-350 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
               />
-              <button
-                className="ml-4 border p-1 rounded hover:bg-blue-500"
-                onClick={updateDetails}
-              >
-                Update
-              </button>
-              <button
-                className="ml-2 border p-1 rounded hover:bg-gray-300"
-                onClick={() => {
-                  setPasswordEdit(false);
-
-                  setOldPassCorrect(false);
-                  setOldPassword("");
-                  setNewPassword("");
-                  setError("");
-                }}
-              >
-                Cancel
-              </button>
-              {error && <div className="text-red-500">{error}</div>}
+              <div className="flex gap-2">
+                <button
+                  onClick={updateDetails}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={() => {
+                    setPasswordEdit(false);
+                    setOldPassCorrect(false);
+                  }}
+                  className="border border-slate-300 hover:bg-slate-100 text-slate-600 px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
         </div>

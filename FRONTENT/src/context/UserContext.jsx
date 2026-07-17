@@ -5,14 +5,17 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({ name: "", email: "" });
+  const [loading, setLoading] = useState(true);
 
   const refetchUser = async () => {
+    setLoading(true);
     try {
       const data = await fetchUserDetails();
       setUser(data);
     } catch (error) {
-      // If fetch fails, set default user (not logged in)
       setUser({ name: "", email: "" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -21,7 +24,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, refetchUser }}>
+    <UserContext.Provider value={{ user, setUser, refetchUser, loading }}>
       {children}
     </UserContext.Provider>
   );

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import { UserContext } from "../../context/UserContext";
 import { useContext } from "react";
 import { handleShortUrl } from "../../api/fetchProfile";
@@ -10,111 +9,142 @@ const Hero = () => {
   const [error, setError] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const frontendUrl = `${window.location.protocol}//${window.location.host}`;
-
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getShortUrl = async () => {
-    const text = await handleShortUrl(Input, frontendUrl);
-    if (text.startsWith("http")) {
-      setShortUrl(text);
-      setError("");
-    } else {
-      setError("Failed to shorten the URL.");
-      setShortUrl("");
-      setInput("");
+    if (!Input.trim()) {
+      setError("Please paste a URL first.");
+      return;
     }
-    setCopied(false);
+    setLoading(true);
+    try {
+      const text = await handleShortUrl(Input, frontendUrl);
+      if (text && text.startsWith("http")) {
+        setShortUrl(text);
+        setError("");
+      } else {
+        setError("Failed to shorten the URL. Please make sure it's valid.");
+        setShortUrl("");
+        setInput("");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+      setCopied(false);
+    }
   };
 
   return (
-    <div className="min-h-screen m-8 ">
-      {user && (
-        <h2 className="text-2xl md:text-3xl font-bold  text-center">
-          Welcome, {user.name}!
-        </h2>
-      )}
-      <section className="flex flex-col items-center justify-center py-20 bg-gradient-to-br from-blue-500 to-indigo-600 text-white border rounded-lg mt-12 shadow-lg">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-10 pl-3 text-center h-[58px] rounded-lg ">
-          Shorten Your Links Instantly
-        </h1>
-        <p className="text-lg md:text-2xl mb-8 text-center max-w-2xl">
-          Paste your long URLs and get a short, easy-to-share link in seconds.
-          Fast, reliable, and free!
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
-          <input
-            type="text"
-            placeholder="Paste your long URL here..."
-            className="flex-1 px-4 py-3 rounded-lg border-1 focus:outline-none text-white"
-            value={Input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setError("");
-            }}
-          />
-          <button
-            onClick={getShortUrl}
-            className="bg-white text-indigo-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-indigo-50 transition "
-          >
-            Shorten URL
-          </button>
+    <div className="min-h-screen bg-slate-50 text-slate-800 py-16 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-6">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-semibold">
+            {user && user.name && user.email ? `Welcome back, ${user.name}` : "Welcome, User"}
+          </span>
         </div>
-        {error ? (
-          <div className="mt-6 text-lg text-red-700 font-semibold bg-white p-4 rounded-lg shadow flex items-center gap-4">
-            {error || "Please enter a valid URL."}
+
+        <section className="bg-white border border-slate-200 rounded-2xl p-8 md:p-12 shadow-sm text-center mb-16">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-slate-900 tracking-tight">
+            Shorten Your Links Instantly
+          </h1>
+          <p className="text-slate-500 text-base md:text-lg mb-8 max-w-xl mx-auto">
+            Paste your long URLs and get a short, easy-to-share link in seconds. Fast, reliable, and free.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-2 w-full max-w-xl mx-auto bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+            <input
+              type="text"
+              placeholder="Paste your long URL here... (e.g., https://example.com)"
+              className="flex-1 px-3 py-2 bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-800 placeholder-slate-400 text-sm"
+              value={Input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                setError("");
+              }}
+            />
+            <button
+              onClick={getShortUrl}
+              disabled={loading}
+              className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium px-6 py-2.5 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+            >
+              {loading ? (
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              ) : (
+                "Shorten URL"
+              )}
+            </button>
           </div>
-        ) : (
-          shortUrl && (
-            <div className="mt-6 text-lg text-white font-semibold bg-indigo-700 p-4 rounded-lg shadow flex items-center gap-4">
-              <span>Your Shortened URL:</span>
-              <a
-                href={`${shortUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-300 hover:underline"
-              >
-                {`${shortUrl}`}
-              </a>
-              <button
-                onClick={async () => {
-                  await navigator.clipboard.writeText(`${shortUrl}`);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1500);
-                }}
-                className="ml-2 px-3 py-1 bg-indigo-500 rounded hover:bg-indigo-400 text-white"
-              >
-                {copied ? "Copied!" : "Copy"}
-              </button>
+
+          {error && (
+            <div className="mt-4 inline-flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-100 px-4 py-2.5 rounded-lg font-medium">
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              {error}
             </div>
-          )
-        )}
-      </section>
-      <section className="mt-16 flex flex-col items-center ">
-        <h2 className="text-2xl font-bold mb-4">How It Works</h2>
-        <ol className="list-decimal list-inside text-lg space-y-2 max-w-xl text-center">
-          <li>Paste your long URL in the input box above.</li>
-          <li>
-            Click the{" "}
-            <span className="font-semibold text-indigo-600">Shorten URL</span>{" "}
-            button.
-          </li>
-          <li>Copy your new, short link and share it anywhere!</li>
-        </ol>
-        <div className="mt-10 flex flex-wrap justify-center gap-8">
-          <div className="rounded-lg p-6 shadow text-white max-w-xs bg-indigo-700">
-            <h3 className="font-semibold text-xl mb-2">Fast & Reliable</h3>
-            <p>Get your short link in seconds, with 99.9% uptime.</p>
+          )}
+
+          {shortUrl && !error && (
+            <div className="mt-6 bg-indigo-50/50 border border-indigo-100/80 p-5 rounded-xl max-w-lg mx-auto">
+              <div className="text-xs text-indigo-600 font-semibold mb-2 text-left">Your Shortened URL:</div>
+              <div className="flex items-center justify-between gap-4 bg-white border border-slate-200 p-2.5 rounded-lg">
+                <a
+                  href={shortUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:text-indigo-700 font-medium underline truncate text-left text-sm select-all"
+                >
+                  {shortUrl}
+                </a>
+                <button
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(shortUrl);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  }}
+                  className={`px-3 py-1.5 rounded-md font-medium text-xs transition duration-150 cursor-pointer ${copied
+                      ? "bg-emerald-600 text-white"
+                      : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200"
+                    }`}
+                >
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Simple Features Section */}
+        <section className="mb-12">
+          <h2 className="text-xl font-bold text-center mb-8 text-slate-800">
+            Features
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white border border-slate-200 p-6 rounded-xl">
+              <h3 className="font-semibold text-base mb-2 text-slate-900">Fast & Reliable</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Generate short links instantly. Redirects are processed quickly for maximum uptime.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200 p-6 rounded-xl">
+              <h3 className="font-semibold text-base mb-2 text-slate-900">Secure</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                We handle your redirects safely to prevent malicious destination forwards.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200 p-6 rounded-xl">
+              <h3 className="font-semibold text-base mb-2 text-slate-900">Analytics</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Sign in to view link stats, track click counts, and manage your history.
+              </p>
+            </div>
           </div>
-          <div className="rounded-lg p-6 shadow text-white max-w-xs bg-indigo-700">
-            <h3 className="font-semibold text-xl mb-2">Easy to Use</h3>
-            <p>No sign-up required. Just paste, shorten, and share.</p>
-          </div>
-          <div className="rounded-lg p-6 shadow text-white max-w-xs bg-indigo-700">
-            <h3 className="font-semibold text-xl mb-2">Completely Free</h3>
-            <p>Enjoy unlimited link shortening at no cost.</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 };

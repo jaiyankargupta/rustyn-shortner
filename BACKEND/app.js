@@ -19,7 +19,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, "") : "";
-
 app.use(
   cors({
     origin: frontendUrl,
