@@ -7,11 +7,11 @@ import { UserContext } from "../../context/UserContext";
 const DashboardLayout = () => {
   const { user } = useContext(UserContext);
   return (
-    <div className="flex flex-col md:flex-row gap-6 p-6 bg-slate-50 min-h-screen text-slate-800">
+    <div className="flex flex-col md:flex-row gap-4 md:gap-6 p-3 sm:p-4 md:p-6 bg-slate-50 min-h-screen text-slate-800">
       <Sidebar />
-      
-      <div className="flex-1 flex flex-col gap-6">
-        <header className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+
+      <div className="flex-1 flex flex-col gap-4 md:gap-6">
+        <header className="bg-white border border-slate-200 rounded-xl p-4 md:p-6 shadow-sm">
           <h1 className="text-xl md:text-2xl font-bold text-slate-900">
             Welcome back, {user?.name || "User"}
           </h1>
@@ -20,7 +20,7 @@ const DashboardLayout = () => {
           </p>
         </header>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-6 md:p-8 min-h-[400px] shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-6 md:p-8 min-h-[400px] shadow-sm">
           <Outlet />
         </div>
       </div>

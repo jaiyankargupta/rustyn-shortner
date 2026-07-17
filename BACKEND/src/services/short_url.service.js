@@ -1,6 +1,8 @@
 import shortUrl from "../configs/models/shortUrl.model.js";
 import { generateNanoId } from "../utils/helper.js";
 import jwt from "jsonwebtoken";
+import redis from "../configs/redis.config.js";
+
 export const shortUrlService = async (
   fullShortUrl,
   url,
@@ -17,25 +19,57 @@ export const shortUrlService = async (
     shortId: id,
   });
 
-  //save the data
-  newUrl.save();
+  // Save the data to MongoDB
+  await newUrl.save();
+
+  // Cache the mapping in Redis
+  try {
+    await redis.set(id, url);
+  } catch (err) {
+    console.error("Failed to cache URL in Redis:", err);
+  }
+
   return short_url;
 };
 
 export const getFullUrlService = async (id, res, req) => {
-  const url = await shortUrl.findOneAndUpdate(
-    { shortId: id },
-    { $inc: { clicks: 1 } }
-  );
+  let destinationUrl = null;
 
-  if (url) {
+  try {
+    destinationUrl = await redis.get(id);
+  } catch (err) {
+    console.error("Redis fetch error:", err);
+  }
+
+  if (destinationUrl) {
+    shortUrl.findOneAndUpdate(
+      { shortId: id },
+      { $inc: { clicks: 1 } }
+    ).catch((err) => console.error("Async click increment failed:", err));
+  } else {
+    const urlDoc = await shortUrl.findOneAndUpdate(
+      { shortId: id },
+      { $inc: { clicks: 1 } }
+    );
+    if (urlDoc) {
+      destinationUrl = urlDoc.full_url;
+      // Cache the result in Redis for future requests
+      try {
+        await redis.set(id, destinationUrl);
+      } catch (err) {
+        console.error("Failed to populate cache in Redis:", err);
+      }
+    }
+  }
+
+  if (destinationUrl) {
     res.send(`
       <!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="refresh" content="1;url=${url.full_url}" />
+        <meta http-equiv="refresh" content="1;url=${destinationUrl}" />
         <title>Redirecting...</title>
         <style>
           body {
@@ -87,7 +121,7 @@ export const getFullUrlService = async (id, res, req) => {
         </div>
         <script>
           setTimeout(() => {
-            window.location.href = "${url.full_url}";
+            window.location.href = "${destinationUrl}";
           }, 1000);
         </script>
       </body>

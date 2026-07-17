@@ -24,17 +24,17 @@ const Header = () => {
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50 text-slate-800">
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
 
         <div className="flex items-center">
-          <Link to="/" className="flex items-center gap-2 group">
-            <img src="/image.png" alt="Logo" className="w-7 h-7 object-contain" />
-            <span className="text-lg font-bold tracking-tight text-slate-900">
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 group">
+            <img src="/image.png" alt="Logo" className="w-6 h-6 sm:w-7 sm:h-7 object-contain" />
+            <span className="text-sm xs:text-base sm:text-lg font-bold tracking-tight text-slate-900">
               RustynShortner
             </span>
           </Link>
         </div>
-        <nav className="flex items-center space-x-6 relative">
+        <nav className="flex items-center space-x-3 sm:space-x-6 relative">
           <Link
             to="/"
             className={`text-sm font-medium transition duration-150 hover:text-indigo-600 ${location.pathname === "/" ? "text-indigo-600" : "text-slate-500"
