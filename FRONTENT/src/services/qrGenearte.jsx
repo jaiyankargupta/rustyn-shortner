@@ -51,7 +51,7 @@ const QRCodeGenerator = () => {
               setQrGenerated(false);
             }}
             placeholder="Enter URL to generate QR... (https://...)"
-            className="flex-grow px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-800 placeholder-slate-400 text-sm transition"
+            className="flex-grow px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 text-slate-800 placeholder-slate-400 text-sm transition"
           />
           <button
             onClick={generateQRCode}
@@ -74,14 +74,14 @@ const QRCodeGenerator = () => {
         {link && qrGenerated && (
           <div className="flex flex-col items-center gap-4 bg-slate-50 border border-slate-200 p-6 rounded-xl w-full">
             <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm" ref={qrRef}>
-              <QRCodeCanvas 
-                value={link} 
-                size={140} 
+              <QRCodeCanvas
+                value={link}
+                size={140}
                 level="H"
                 includeMargin={true}
               />
             </div>
-            
+
             <button
               onClick={downloadQRCode}
               className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold px-5 py-2 rounded-lg transition shadow-sm flex items-center gap-2 text-xs cursor-pointer"

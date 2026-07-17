@@ -53,28 +53,40 @@ const Hero = () => {
             Paste your long URLs and get a short, easy-to-share link in seconds. Fast, reliable, and free.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-2 w-full max-w-xl mx-auto bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+          <div className="max-w-xl mx-auto text-left">
+            <label className="block text-sm font-bold text-slate-800 mb-2">
+              Paste your long link here
+            </label>
+
             <input
               type="text"
-              placeholder="Paste your long URL here... (e.g., https://example.com)"
-              className="flex-1 px-3 py-2 bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-800 placeholder-slate-400 text-sm"
+              placeholder="https://example.com/my-long-url"
+              className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition mb-4 shadow-sm"
               value={Input}
               onChange={(e) => {
                 setInput(e.target.value);
                 setError("");
               }}
             />
-            <button
-              onClick={getShortUrl}
-              disabled={loading}
-              className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium px-6 py-2.5 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
-            >
-              {loading ? (
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-              ) : (
-                "Shorten URL"
-              )}
-            </button>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <button
+                onClick={getShortUrl}
+                disabled={loading}
+                className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold px-6 py-3 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 shadow-sm"
+              >
+                {loading ? (
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                ) : (
+                  <>
+                    Get your link for free
+                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -105,8 +117,8 @@ const Hero = () => {
                     setTimeout(() => setCopied(false), 1500);
                   }}
                   className={`px-3 py-1.5 rounded-md font-medium text-xs transition duration-150 cursor-pointer ${copied
-                      ? "bg-emerald-600 text-white"
-                      : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200"
+                    ? "bg-emerald-600 text-white"
+                    : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200"
                     }`}
                 >
                   {copied ? "Copied!" : "Copy"}

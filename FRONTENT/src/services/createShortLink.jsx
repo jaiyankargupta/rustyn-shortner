@@ -38,7 +38,7 @@ const CreateShortLink = () => {
         <input
           type="text"
           placeholder="Enter long URL (e.g. https://...)"
-          className="flex-grow px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-800 placeholder-slate-400 text-sm transition"
+          className="flex-grow px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 text-slate-800 placeholder-slate-400 text-sm transition"
           value={input}
           onChange={(e) => {
             setInput(e.target.value);
@@ -46,8 +46,8 @@ const CreateShortLink = () => {
             setShortUrl("");
           }}
         />
-        <button 
-          className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold px-5 py-2 rounded-lg transition shadow-sm cursor-pointer text-sm" 
+        <button
+          className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold px-5 py-2 rounded-lg transition shadow-sm cursor-pointer text-sm"
           type="submit"
           disabled={loading}
         >
@@ -58,7 +58,7 @@ const CreateShortLink = () => {
           )}
         </button>
       </form>
-      
+
       {error && (
         <div className="mt-4 flex items-center gap-2 text-xs text-red-700 bg-red-50 border border-red-100 px-4 py-2.5 rounded-lg">
           <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,7 +67,7 @@ const CreateShortLink = () => {
           {error}
         </div>
       )}
-      
+
       {shortUrl && !error && (
         <div className="mt-5 bg-slate-50 border border-slate-200 p-4 rounded-xl">
           <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">Shortened Link:</div>
@@ -86,11 +86,10 @@ const CreateShortLink = () => {
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1500);
               }}
-              className={`px-3 py-1 rounded font-medium text-xs transition duration-150 cursor-pointer ${
-                copied 
-                  ? "bg-emerald-600 text-white" 
+              className={`px-3 py-1 rounded font-medium text-xs transition duration-150 cursor-pointer ${copied
+                  ? "bg-emerald-600 text-white"
                   : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200"
-              }`}
+                }`}
               type="button"
             >
               {copied ? "Copied!" : "Copy"}
