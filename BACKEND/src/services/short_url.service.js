@@ -21,10 +21,8 @@ export const shortUrlService = async (
 
   // Save the data to MongoDB
   await newUrl.save();
-
-  // Cache the mapping in Redis
   try {
-    await redis.set(id, url);
+    await redis.set(id, url, { ex: 604800 });
   } catch (err) {
     console.error("Failed to cache URL in Redis:", err);
   }
@@ -53,9 +51,8 @@ export const getFullUrlService = async (id, res, req) => {
     );
     if (urlDoc) {
       destinationUrl = urlDoc.full_url;
-      // Cache the result in Redis for future requests
       try {
-        await redis.set(id, destinationUrl);
+        await redis.set(id, destinationUrl, { ex: 604800 });
       } catch (err) {
         console.error("Failed to populate cache in Redis:", err);
       }
