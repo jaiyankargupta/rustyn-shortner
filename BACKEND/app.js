@@ -47,6 +47,9 @@ app.use("/api", router);
 
 app.use("/", router);
 
+app.get("/health", (req, res) => res.status(200).send("OK"));
+
+
 app.listen(3001, () => {
   dbConnect();
   console.log("i am listening 3001");
