@@ -38,6 +38,8 @@ const QRCodeGenerator = () => {
     document.body.removeChild(downloadLink);
   };
 
+  const isLinkValid = link.trim().startsWith("http://") || link.trim().startsWith("https://");
+
   return (
     <div className="w-full max-w-md mx-auto p-1">
       <div className="flex flex-col items-center gap-5">
@@ -55,8 +57,8 @@ const QRCodeGenerator = () => {
           />
           <button
             onClick={generateQRCode}
-            disabled={!link.trim()}
-            className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-5 py-2 rounded-lg transition shadow-sm cursor-pointer text-sm"
+            disabled={!isLinkValid}
+            className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-5 py-2 rounded-lg transition shadow-sm text-sm"
           >
             Generate
           </button>

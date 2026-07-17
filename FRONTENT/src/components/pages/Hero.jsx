@@ -11,6 +11,7 @@ const Hero = () => {
   const frontendUrl = `${window.location.protocol}//${window.location.host}`;
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isInputValid = Input.trim().startsWith("http://") || Input.trim().startsWith("https://");
 
   const getShortUrl = async () => {
     if (!Input.trim()) {
@@ -72,8 +73,8 @@ const Hero = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <button
                 onClick={getShortUrl}
-                disabled={loading}
-                className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold px-6 py-3 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 shadow-sm"
+                disabled={!isInputValid || loading}
+                className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2 shadow-sm"
               >
                 {loading ? (
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
