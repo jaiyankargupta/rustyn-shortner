@@ -43,11 +43,11 @@ app.use((req, res, next) => {
 
 app.use("/api/auth", auth_routes);
 
+app.get("/health", (req, res) => res.status(200).send("OK"));
+
 app.use("/api", router);
 
 app.use("/", router);
-
-app.get("/health", (req, res) => res.status(200).send("OK"));
 
 
 app.listen(3001, () => {
